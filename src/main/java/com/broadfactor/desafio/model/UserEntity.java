@@ -1,12 +1,9 @@
 package com.broadfactor.desafio.model;
 
 
-import com.broadfactor.desafio.service.CnpjService;
 import com.broadfactor.desafio.dto.UserDTO;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;

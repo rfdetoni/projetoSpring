@@ -1,11 +1,13 @@
 package com.broadfactor.desafio.model;
 
 import com.broadfactor.desafio.dto.ActivitiesDTO;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.UUID;
@@ -16,10 +18,10 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@EntityListeners( AuditingEntityListener.class )
+//@Builder
+//@EntityListeners( Company.class )
 @EqualsAndHashCode(of = "id")
-@JsonIgnoreProperties( { "hibernateLazyInitializer", "handler" } )
+
 public class Activities {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -29,23 +31,31 @@ public class Activities {
     private String text;
 
     private Integer tipo;
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company", referencedColumnName = "id")
+
+    @ManyToOne
+    @JoinColumn(name = "company", referencedColumnName="id")
+    @JsonIgnore
     private Company company;
+
+
+
+
+    public Activities(ActivitiesDTO activitiesDTO, Boolean isPrincipal, Company comp) {
+        this.id = activitiesDTO.id();
+        this.code = activitiesDTO.code();
+        this.text = activitiesDTO.text();
+        this.tipo = isPrincipal ? 1 : 2;
+        this.company = comp;
+    }
 
     public UUID getId() {
         return id;
     }
 
-    public Activities(ActivitiesDTO activitiesDTO, Boolean isPrincipal) {
-        this.id = activitiesDTO.id();
-        this.code = activitiesDTO.code();
-        this.text = activitiesDTO.text();
-        this.tipo = isPrincipal ? 1 : 2;
-        this.company = activitiesDTO.company();
-    }
-
     public void setTipo(Integer tipo) {
         this.tipo = tipo;
+    }
+
+    public void setCompany(Company company) {
     }
 }
