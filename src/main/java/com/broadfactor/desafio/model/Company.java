@@ -27,14 +27,22 @@ public class Company {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", updatable = false, unique = true, nullable = false)
     private UUID id;
-    @OneToMany(mappedBy = "company", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+
+    @OneToMany(mappedBy = "company",
+            orphanRemoval = true,
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
     private List<Activities> atividade;
     private String dataSituacao;
     private String tipo;
     private String nome;
     private String telefone;
     private String email;
-    @OneToMany(mappedBy = "company", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "company",
+            orphanRemoval = true,
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+
     private List<Qsa> qsa;
     private String situacao;
     private String bairro;
@@ -66,7 +74,7 @@ public class Company {
         Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
         if (thisEffectiveClass != oEffectiveClass) return false;
         Company company = (Company) o;
-        return id != null && Objects.equals(id, company.id);
+        return company != null && Objects.equals(company, company.id);
     }
 
     @Override
@@ -76,27 +84,11 @@ public class Company {
 
     public Company(CompanyDTO company) {
         this.id = company.id();
-
-        var activities = new ArrayList<Activities>();
-        company.atividades_secundarias().forEach(atividade -> {
-            activities.add(new Activities(atividade, false));
-        });
-
-        company.atividade_principal().forEach(atividade -> {
-            activities.add(new Activities(atividade, true));
-        });
-        this.atividade = activities;
-
         this.dataSituacao = company.dataSituacao();
         this.tipo = company.tipo();
         this.nome = company.nome();
         this.telefone = company.telefone();
         this.email = company.email();
-        var qsaArray = new ArrayList<Qsa>();
-        company.qsa().forEach(qsaItem ->{
-            qsaArray.add(new Qsa(qsaItem));
-        });
-
         this.situacao = company.situacao();
         this.bairro = company.bairro();
         this.logradouro = company.logradouro();
@@ -123,5 +115,38 @@ public class Company {
 
     public String getCnpj() {
         return cnpj;
+    }
+
+
+    public UUID getId() {
+        return id;
+    }
+
+    public void updateFromDTO(CompanyDTO companyDTO) {
+        this.dataSituacao = companyDTO.dataSituacao();
+        this.tipo = companyDTO.tipo();
+        this.nome = companyDTO.nome();
+        this.telefone = companyDTO.telefone();
+        this.email = companyDTO.email();
+        this.situacao = companyDTO.situacao();
+        this.bairro = companyDTO.bairro();
+        this.logradouro = companyDTO.logradouro();
+        this.numero = companyDTO.numero();
+        this.cep = companyDTO.cep();
+        this.municipio = companyDTO.municipio();
+        this.porte = companyDTO.porte();
+        this.abertura = companyDTO.abertura();
+        this.naturezaJuridica = companyDTO.naturezaJuridica();
+        this.uf = companyDTO.uf();
+        this.cnpj = companyDTO.cnpj().replace(".", "").replace("-", "").replace("/", "");
+        this.ultimaAtualizacao = companyDTO.ultimaAtualizacao();
+        this.status = companyDTO.status();
+        this.fantasia = companyDTO.fantasia();
+        this.complemento = companyDTO.complemento();
+        this.efr = companyDTO.efr();
+        this.motivoSituacao = companyDTO.motivoSituacao();
+        this.situacaoEspecial = companyDTO.situacaoEspecial();
+        this.dataSituacaoEspecial = companyDTO.dataSituacaoEspecial();
+        this.capitalSocial = companyDTO.capitalSocial();
     }
 }

@@ -2,20 +2,14 @@ package com.broadfactor.desafio.model;
 
 import com.broadfactor.desafio.dto.QsaDTO;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.JdbcTypeCode;
-import org.hibernate.annotations.Type;
-import org.hibernate.type.SqlTypes;
-import org.hibernate.dialect.Dialect;
 
 
 import java.util.UUID;
 
 @Table(name = "qsa")
-@Entity(name = "Qsa")
+@Entity
 @Getter
 @Setter
 @NoArgsConstructor
@@ -30,13 +24,18 @@ public class Qsa {
     private String nome;
     private String qual;
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "company", referencedColumnName = "id")
+    @JoinColumn(name = "company")
+    @JsonIgnore
     private Company company;
 
-    public Qsa(QsaDTO qsa) {
+    public Qsa(QsaDTO qsa, Company comp) {
         this.id = qsa.id();
         this.nome = qsa.nome();
         this.qual = qsa.qual();
-        this.company = qsa.company();
+        this.company = comp;
+    }
+
+    public void setCompany(Company company){
+        this.company = company;
     }
 }

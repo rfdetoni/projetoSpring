@@ -4,7 +4,6 @@ import com.broadfactor.desafio.dto.ResponseDTO;
 import com.broadfactor.desafio.model.Company;
 import com.broadfactor.desafio.model.UserEntity;
 import com.broadfactor.desafio.dto.UserDTO;
-import com.broadfactor.desafio.model.UserDetailsResponse;
 import com.broadfactor.desafio.repository.CompanyRepository;
 import com.broadfactor.desafio.repository.UserRepository;
 import jakarta.validation.ConstraintViolationException;
@@ -32,7 +31,7 @@ public class UserService {
     CompanyRepository companyRepository;
 
     @Autowired
-    private CnpjService cnpjService;
+    private CompanyService companyService;
 
     public ResponseEntity create(UserDTO dados, Company company) {
         UUID id;
@@ -51,14 +50,6 @@ public class UserService {
         return new ResponseEntity(new ResponseDTO("Cadastro Efetuado com sucesso",id), HttpStatus.OK);
     }
 
-    public void delete(Long id, String cnpj, JdbcTemplate jdbcTemplate){
-        String cnpjDelete = "delete from cnpj where cnpj = ?";
-        jdbcTemplate.update(cnpjDelete, cnpj);
-
-        String userDelete = "delete from users where id = ?";
-        jdbcTemplate.update(userDelete, id);
-    }
-
     public UserEntity update(UUID id, UserDTO dados) {
         Optional<UserEntity> existingUserOptional = Optional.ofNullable(userRepository.getReferenceById(id));
 
@@ -71,12 +62,12 @@ public class UserService {
         Company savedCompany = companyRepository.getReferenceByCnpj(dados.cnpj());
         if (!dados.cnpj().isEmpty() & !dados.cnpj().equals(existingUser.getCompany().getCnpj())) {
            if (savedCompany == null) {
-               savedCompany = companyRepository.save(cnpjService.retornaCnpj(dados.cnpj()));
+               savedCompany = companyService.update(dados.cnpj());
            }
         }
-        existingUser.setName(existingUser.getName());
-        existingUser.setEmail(existingUser.getEmail());
-        existingUser.setPassword(existingUser.getPassword());
+        existingUser.setName(dados.name().isEmpty() ? existingUser.getName() : dados.name());
+        existingUser.setEmail(dados.email().isEmpty() ? existingUser.getEmail() : dados.email());
+        existingUser.setPassword(dados.password().isEmpty() ? existingUser.getPassword() : dados.password());
         existingUser.setCompany(savedCompany);
 
 

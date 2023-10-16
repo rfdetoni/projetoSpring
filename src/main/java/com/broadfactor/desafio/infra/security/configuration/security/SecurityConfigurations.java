@@ -1,4 +1,4 @@
-package com.broadfactor.desafio.infra.security.configuration;
+package com.broadfactor.desafio.infra.security.configuration.security;
 
 import com.broadfactor.desafio.infra.security.filter.SecurityFilter;
 import org.springframework.beans.factory.annotation.Autowired;
